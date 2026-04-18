@@ -1,4 +1,4 @@
-const CACHE_NAME = "cipher-dispatch-v1";
+const CACHE_NAME = "cipher-dispatch-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const ASSETS = [
   "./app.js",
   "./manifest.webmanifest",
   "./icon.svg",
+  "./og-image.jpg",
   "./eric-portrait.png",
   "./main-page-portrait.png",
   "./machine-mechanical.svg",
