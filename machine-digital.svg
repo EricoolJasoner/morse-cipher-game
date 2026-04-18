@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">现代数字终端</title>
+  <desc id="desc">带有全息波形显示和数字按键的现代发报终端。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#071019"/>
+      <stop offset="100%" stop-color="#02060c"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f2d47"/>
+      <stop offset="100%" stop-color="#08131e"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="480" rx="40" fill="url(#bg)"/>
+  <circle cx="128" cy="84" r="112" fill="#5cf3ff" opacity=".12"/>
+  <circle cx="610" cy="388" r="146" fill="#5cf3ff" opacity=".08"/>
+  <rect x="100" y="78" width="520" height="252" rx="30" fill="#0d1622" stroke="#5cf3ff" stroke-width="4" stroke-opacity=".28"/>
+  <rect x="130" y="112" width="460" height="144" rx="20" fill="url(#screen)"/>
+  <g stroke="#44d6c8" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M150 214c24-28 42-58 62-58 24 0 28 64 52 64 18 0 26-48 42-48 20 0 26 26 44 26 20 0 32-58 54-58 26 0 34 74 62 74 22 0 26-38 56-38"/>
+    <path d="M150 176h420" opacity=".18"/>
+  </g>
+  <g fill="#14293d" stroke="#69f7ff" stroke-opacity=".2">
+    <rect x="150" y="286" width="116" height="28" rx="12"/>
+    <rect x="280" y="286" width="116" height="28" rx="12"/>
+    <rect x="410" y="286" width="116" height="28" rx="12"/>
+  </g>
+  <g fill="#0f1a26" stroke="#2fd8ef" stroke-opacity=".22" stroke-width="2">
+    <rect x="146" y="352" width="66" height="50" rx="14"/>
+    <rect x="224" y="352" width="66" height="50" rx="14"/>
+    <rect x="302" y="352" width="66" height="50" rx="14"/>
+    <rect x="380" y="352" width="66" height="50" rx="14"/>
+    <rect x="458" y="352" width="66" height="50" rx="14"/>
+  </g>
+  <rect x="544" y="346" width="44" height="64" rx="18" fill="#143649" stroke="#87fff4" stroke-opacity=".4"/>
+  <circle cx="566" cy="378" r="10" fill="#87fff4"/>
+  <text x="100" y="58" fill="#d9fbff" font-size="34" font-family="Segoe UI, sans-serif" letter-spacing="4">DIGITAL TERMINAL</text>
+  <text x="100" y="92" fill="#90cddb" font-size="18" font-family="Cascadia Code, monospace">GEN-III / AUTO CORRECTION ONLINE</text>
+</svg>

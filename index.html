@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Eric 和朋友们的摩斯暗语</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <meta name="theme-color" content="#c8362c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Cipher Dispatch">
+  <meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+  <canvas id="noise-canvas" class="noise-canvas" aria-hidden="true"></canvas>
+  <div class="atmosphere atmosphere-a" aria-hidden="true"></div>
+  <div class="atmosphere atmosphere-b" aria-hidden="true"></div>
+  <div class="grid-overlay" aria-hidden="true"></div>
+
+  <div class="classification-strip" aria-hidden="true">
+    <span class="classification-tag"><span class="classification-dot"></span>CLASSIFIED</span>
+    <span>DIRECTORATE OF SIGNALS INTELLIGENCE</span>
+    <span>EYES ONLY · LEVEL IV</span>
+    <span class="classification-tag"><span class="classification-dot"></span>LIVE</span>
+  </div>
+
+  <div class="dispatch-masthead" aria-hidden="true">
+    <div class="masthead-inner">
+      <span class="masthead-mark">§</span>
+      <span class="masthead-title">CIPHER DISPATCH</span>
+      <span class="masthead-meta">暗号电报 · 中继台日报</span>
+      <span class="masthead-spacer"></span>
+      <span class="masthead-meta">VOL.Ⅰ · NO. 06</span>
+      <span class="masthead-meta" id="masthead-date">MMIV · LONDON–HONG KONG WIRE</span>
+    </div>
+  </div>
+
+  <div id="gate-screen" class="gate-screen">
+    <div class="gate-backdrop"></div>
+    <section class="gate-panel">
+      <div class="gate-copy">
+        <div class="eyebrow">Verification / Eric Access Channel</div>
+        <h1>中继站身份验证</h1>
+        <p class="gate-text">
+          在进入发报大厅之前，先完成 Eric 的身份校验。验证通过后，电报码台、任务墙和监听波形才会通电。
+        </p>
+
+        <div class="gate-question-card">
+          <span class="brief-label">验证题</span>
+          <p>Eric 是 <strong>__</strong> 班的？</p>
+          <div class="gate-form">
+            <input id="gate-answer" class="gate-input" type="text" inputmode="numeric" autocomplete="off" placeholder="输入答案">
+            <button id="gate-submit" class="action-btn primary" type="button">进入游戏</button>
+          </div>
+          <p id="gate-error" class="gate-error">答案不正确，请重新输入。</p>
+        </div>
+      </div>
+
+      <div class="gate-portrait-card">
+        <img src="eric-portrait.png" alt="Eric 肖像">
+        <div class="gate-portrait-caption">
+          <span class="brief-label">Station Portrait</span>
+          <p>Eric 的小伙伴们，欢迎来到暗号挑战。先通过这道验证题，证明你是我们的秘密成员，然后进入密码室开始任务。</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="app-shell">
+    <header class="panel hero-panel">
+      <div>
+        <div class="eyebrow">Eric &amp; Friends / Morse Cipher Command</div>
+        <h1>暗号中继站</h1>
+        <p class="hero-copy">
+          一座跨越冷战地下室与未来赛博终端的电报站。你将用节奏、判断和稳定性完成监听、编码与抗干扰任务。
+        </p>
+        <div class="hero-identity-grid">
+          <article class="identity-card">
+            <span class="brief-label">Operative Identity</span>
+            <h3>先输入自己的英文名字</h3>
+            <p>第一关会自动变成你的专属任务：先把你自己的名字发出去。</p>
+            <div class="identity-form">
+              <input id="player-name-input" class="identity-input" type="text" autocomplete="off" placeholder="例如 Eric">
+              <button id="player-name-apply" class="action-btn primary" type="button">生成专属密码</button>
+            </div>
+            <p class="identity-hint">仅支持英文字母 A-Z。输入后会自动生成正确的摩斯码。</p>
+          </article>
+
+          <article class="identity-preview-card">
+            <span class="brief-label">Personal Morse Preview</span>
+            <div id="player-name-display" class="identity-name-display">ERIC</div>
+            <code id="player-morse-display" class="identity-morse-display">. .-. .. -.-.</code>
+            <p id="player-mission-note" class="identity-note">第一关目标：把 ERIC 发出去。</p>
+          </article>
+        </div>
+        <article class="phrase-lab-card">
+          <div class="phrase-lab-head">
+            <div>
+              <span class="brief-label">Phrase Lab</span>
+              <h3>自由短句转码</h3>
+            </div>
+            <div class="phrase-chip-row">
+              <button class="phrase-chip" type="button" data-phrase="我爱你">我爱你</button>
+              <button class="phrase-chip" type="button" data-phrase="我恨你">我恨你</button>
+              <button class="phrase-chip" type="button" data-phrase="你在干什么">你在干什么</button>
+            </div>
+          </div>
+          <p>这里可以生成你想看的话。常见中文短句会自动转成拼音报码，英文和数字会直接转成摩斯码。</p>
+          <div class="identity-form">
+            <input id="phrase-input" class="identity-input" type="text" autocomplete="off" placeholder="例如 我爱你 / I LOVE YOU">
+            <button id="phrase-apply" class="action-btn ghost" type="button">生成短句密码</button>
+          </div>
+          <div class="phrase-preview-grid">
+            <div class="phrase-preview-item">
+              <span class="brief-label">原句</span>
+              <div id="phrase-source-display" class="phrase-source-display">我爱你</div>
+            </div>
+            <div class="phrase-preview-item">
+              <span class="brief-label">转码文本</span>
+              <div id="phrase-latin-display" class="phrase-latin-display">WO AI NI</div>
+            </div>
+            <div class="phrase-preview-item full">
+              <span class="brief-label">摩斯码</span>
+              <code id="phrase-morse-display" class="identity-morse-display">.-- ---  .- ..  -. ..</code>
+              <p id="phrase-note" class="identity-note">已按拼音生成示例短句。</p>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="hero-side">
+        <article class="portrait-card">
+          <img src="main-page-portrait.png" alt="Eric 朋友肖像">
+          <div class="portrait-card-copy">
+            <span class="brief-label">Field Portrait</span>
+            <p>欢迎进入游戏，准备好让你的名字和暗号一起亮起吧。</p>
+          </div>
+        </article>
+        <div class="hero-metrics">
+          <div class="metric-card">
+            <span>战役进度</span>
+            <strong id="campaign-progress">0 / 6</strong>
+          </div>
+          <div class="metric-card">
+            <span>总分</span>
+            <strong id="total-score">0</strong>
+          </div>
+          <div class="metric-card">
+            <span>解锁机型</span>
+            <strong id="machine-progress">1 / 4</strong>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="panel mission-board">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Campaign</div>
+            <h2>任务墙</h2>
+          </div>
+          <span class="mini-tag" id="campaign-status-tag">新兵校准</span>
+        </div>
+        <div id="mission-list" class="mission-list"></div>
+      </aside>
+
+      <main class="center-column">
+        <section class="panel terminal-panel">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Current Mission</div>
+              <h2 id="mission-title">任务载入中</h2>
+            </div>
+            <div class="chip-row">
+              <span id="mission-type-chip" class="chip">监听</span>
+              <span id="mission-env-chip" class="chip muted">静态环境</span>
+              <span id="mission-difficulty-chip" class="chip muted">Lv.1</span>
+            </div>
+          </div>
+
+          <p id="mission-story" class="mission-story"></p>
+
+          <div class="brief-grid">
+            <article class="brief-card">
+              <span class="brief-label">作战指令</span>
+              <p id="mission-brief"></p>
+            </article>
+            <article class="brief-card">
+              <span class="brief-label">监听片段</span>
+              <code id="incoming-sequence">--</code>
+            </article>
+          </div>
+
+          <div class="wave-shell">
+            <canvas id="waveform" width="960" height="240"></canvas>
+            <div class="wave-overlay" aria-hidden="true"></div>
+          </div>
+
+          <div class="terminal-strip">
+            <div class="strip-item">
+              <span>当前节奏</span>
+              <strong id="current-symbol">等待输入</strong>
+            </div>
+            <div class="strip-item">
+              <span>实时预判</span>
+              <strong id="live-preview">...</strong>
+            </div>
+            <div class="strip-item">
+              <span>最近脉冲</span>
+              <strong id="last-pulse">0 ms</strong>
+            </div>
+            <div class="strip-item">
+              <span>状态</span>
+              <strong id="mission-state">待命</strong>
+            </div>
+          </div>
+
+          <div class="readout-grid">
+            <article class="readout-card">
+              <span class="brief-label">目标内容</span>
+              <div id="target-text" class="target-text">等待任务</div>
+            </article>
+            <article class="readout-card">
+              <span class="brief-label">已发送报码</span>
+              <div id="transmitted-text" class="transmitted-text">尚未发报</div>
+            </article>
+          </div>
+
+          <div class="controls-row">
+            <button id="replay-btn" class="action-btn ghost">重放监听</button>
+            <button id="reset-btn" class="action-btn ghost">清空缓冲</button>
+            <button id="next-btn" class="action-btn primary">下一任务</button>
+          </div>
+
+          <article id="tutorial-callout" class="tutorial-callout">
+            <span class="brief-label">第一关玩法</span>
+            <h3 id="tutorial-title">先听示例，再模仿发报</h3>
+            <p id="tutorial-text">先点“播放姓名示例”，听完系统示范，再按住发报键模仿自己的名字，完成后会得到分数。</p>
+          </article>
+
+          <div class="key-deck">
+            <section class="panel inner-panel training-panel">
+              <div class="section-head compact">
+                <div>
+                  <div class="eyebrow">Rhythm Assist</div>
+                  <h3>节奏辅助</h3>
+                </div>
+                <span class="mini-tag" id="machine-name-tag">机械手键</span>
+              </div>
+              <div class="tempo-legend">
+                <span>点 = 1 拍</span>
+                <span>划 = 3 拍</span>
+                <span>停顿自动切字</span>
+              </div>
+              <div class="tempo-bar">
+                <div id="tempo-fill" class="tempo-fill"></div>
+              </div>
+              <div class="quality-grid">
+                <div class="quality-item">
+                  <span>准确率</span>
+                  <strong id="accuracy-value">100%</strong>
+                </div>
+                <div class="quality-item">
+                  <span>节奏评分</span>
+                  <strong id="rhythm-value">A</strong>
+                </div>
+                <div class="quality-item">
+                  <span>发报速率</span>
+                  <strong id="speed-value">0 / min</strong>
+                </div>
+              </div>
+            </section>
+
+            <button id="telegraph-key" class="telegraph-key" type="button">
+              <span class="key-label-top">PRESS / HOLD</span>
+              <span class="key-label-main">SPACE 发报键</span>
+              <span class="key-label-bottom">短按点 · 长按划 -</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="panel lower-panel">
+          <div class="lower-grid">
+            <article class="log-panel">
+              <div class="section-head compact">
+                <div>
+                  <div class="eyebrow">Operations</div>
+                  <h3>系统日志</h3>
+                </div>
+              </div>
+              <ul id="system-log" class="system-log"></ul>
+            </article>
+
+            <article class="achievement-panel">
+              <div class="section-head compact">
+                <div>
+                  <div class="eyebrow">Honors</div>
+                  <h3>荣誉与解锁</h3>
+                </div>
+              </div>
+              <div id="achievement-list" class="achievement-list"></div>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <aside class="panel systems-panel">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Hardware</div>
+            <h2>机型仓</h2>
+          </div>
+        </div>
+        <article class="machine-preview-card">
+          <img id="machine-preview-image" src="machine-mechanical.svg" alt="当前机型预览">
+          <div class="machine-preview-copy">
+            <span class="brief-label">Current Machine</span>
+            <h3 id="machine-preview-title">第一代机械手键</h3>
+            <p id="machine-preview-caption">灵敏但躁动，适合练准度。</p>
+          </div>
+        </article>
+        <div id="machine-list" class="machine-list"></div>
+
+        <div class="status-cluster">
+          <div class="status-card">
+            <span>连续完美任务</span>
+            <strong id="streak-value">0</strong>
+          </div>
+          <div class="status-card">
+            <span>本关得分</span>
+            <strong id="mission-score">0</strong>
+          </div>
+          <div class="status-card">
+            <span>干扰等级</span>
+            <strong id="noise-value">低</strong>
+          </div>
+        </div>
+
+        <div class="intel-card">
+          <div class="eyebrow">Brief</div>
+          <h3>世界观设定</h3>
+          <p>
+            本作采用“双时空混合题材”：二战式监听室负责仪式感，赛博终端负责高级感与信息密度。整体风格不是二选一，而是叠加。
+          </p>
+        </div>
+
+        <div class="intel-card">
+          <div class="eyebrow">Controls</div>
+          <h3>操作说明</h3>
+          <p>按住 <kbd>Space</kbd> 或按住发报键输入。停顿后系统会自动识别一个字母。</p>
+          <p>监听关卡建议先点“重放监听”，再根据波形和节奏回推内容。</p>
+          <p>手机上直接按住底部发报键即可，松手后系统会自动判断点和划。</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js").catch((err) => {
+          console.warn("Service worker registration failed", err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

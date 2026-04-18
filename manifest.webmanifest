@@ -1,0 +1,27 @@
+{
+  "name": "暗号中继站 · Cipher Dispatch",
+  "short_name": "Cipher",
+  "description": "Eric 和朋友们的摩斯暗语 · 战术电报游戏",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#04060a",
+  "theme_color": "#c8362c",
+  "lang": "zh-CN",
+  "categories": ["games", "education"],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" role="img" aria-labelledby="title desc">
+  <title id="title">传奇便携特工机</title>
+  <desc id="desc">打开的便携箱体中是一台秘密发报机，周围带有地图和文件。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#150f13"/>
+      <stop offset="100%" stop-color="#08090e"/>
+    </linearGradient>
+    <linearGradient id="case" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#59402f"/>
+      <stop offset="100%" stop-color="#221712"/>
+    </linearGradient>
+    <linearGradient id="map" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e0d0a2"/>
+      <stop offset="100%" stop-color="#b79662"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="480" rx="40" fill="url(#bg)"/>
+  <circle cx="120" cy="380" r="132" fill="#ffca69" opacity=".08"/>
+  <circle cx="612" cy="102" r="124" fill="#5cf3ff" opacity=".1"/>
+  <rect x="102" y="136" width="516" height="246" rx="28" fill="url(#case)" stroke="#9f7956" stroke-width="4"/>
+  <rect x="132" y="108" width="456" height="100" rx="18" fill="url(#map)" stroke="#8e6b46" stroke-width="3"/>
+  <path d="M180 154c26-16 64-28 110-32 60 20 90 36 136 58 46-24 80-42 122-52" fill="none" stroke="#6c553d" stroke-width="5" stroke-linecap="round"/>
+  <path d="M164 232h392" fill="none" stroke="#c8b07b" stroke-width="3" stroke-dasharray="8 8"/>
+  <rect x="160" y="236" width="244" height="106" rx="16" fill="#18151a" stroke="#5cf3ff" stroke-opacity=".24" stroke-width="3"/>
+  <rect x="190" y="262" width="180" height="18" rx="9" fill="#d2a86c"/>
+  <circle cx="334" cy="271" r="14" fill="#eed8ac"/>
+  <rect x="220" y="214" width="22" height="60" rx="10" fill="#d2a86c"/>
+  <rect x="224" y="194" width="14" height="20" rx="7" fill="#3f2815"/>
+  <circle cx="230" cy="186" r="18" fill="#d2a86c"/>
+  <rect x="430" y="236" width="126" height="106" rx="16" fill="#241f1e" stroke="#ffca69" stroke-opacity=".28" stroke-width="3"/>
+  <rect x="448" y="254" width="90" height="56" rx="10" fill="#0c1218"/>
+  <path d="M458 286h70" stroke="#7effb8" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M458 272h20l8-10 8 20 10-8 10 8 8-10 8 12" stroke="#7effb8" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="486" cy="366" r="24" fill="#c99e5d"/>
+  <circle cx="486" cy="366" r="10" fill="#3b2816"/>
+  <text x="102" y="74" fill="#f8e0bc" font-size="34" font-family="Segoe UI, sans-serif" letter-spacing="4">LEGENDARY PORTABLE</text>
+  <text x="102" y="108" fill="#d1b786" font-size="18" font-family="Cascadia Code, monospace">RELIC / FIELD INTERFERENCE MODE</text>
+</svg>
