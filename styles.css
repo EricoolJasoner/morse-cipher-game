@@ -1362,6 +1362,75 @@ h3 {
   color: var(--paper);
 }
 
+/* ============================== MORSE CHART ============================== */
+.morse-chart-panel {
+  padding: 22px 22px 24px;
+}
+
+.morse-chart-hint {
+  font-family: var(--serif);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: var(--paper-dim);
+  margin-bottom: 14px;
+}
+
+.morse-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+}
+
+.morse-cell {
+  display: grid;
+  gap: 4px;
+  padding: 10px 8px;
+  border: 1px solid var(--rule);
+  background: var(--ink-2);
+  color: var(--paper);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 140ms, background 140ms, transform 120ms;
+}
+.morse-cell:hover {
+  border-color: var(--amber);
+  background: var(--ink-3);
+  transform: translateY(-1px);
+}
+.morse-cell:active { transform: translateY(0); }
+
+.morse-cell.dim { opacity: 0.55; }
+
+.morse-cell.done {
+  border-color: rgba(111, 160, 71, 0.6);
+  background: linear-gradient(180deg, rgba(111, 160, 71, 0.16), var(--ink-2));
+}
+.morse-cell.done .morse-letter { color: var(--green); }
+
+.morse-cell.active {
+  border-color: var(--amber-hot);
+  background: linear-gradient(180deg, rgba(243, 187, 87, 0.18), var(--ink-2));
+  box-shadow: inset 0 0 0 1px var(--amber);
+  animation: tutorialPulse 1.6s ease-in-out infinite;
+  opacity: 1;
+}
+.morse-cell.active .morse-letter { color: var(--amber-hot); }
+
+.morse-letter {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.02em;
+  color: var(--paper);
+}
+
+.morse-code {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  color: var(--amber-hot);
+}
+
 /* ============================== LOWER PANEL ============================== */
 .lower-grid {
   grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
@@ -1640,6 +1709,14 @@ kbd {
     gap: 10px;
   }
   .machine-thumb { width: 68px; height: 56px; }
+
+  .morse-chart-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .morse-cell { padding: 8px 4px; }
+  .morse-letter { font-size: 1.05rem; }
+  .morse-code { font-size: 0.74rem; letter-spacing: 0.04em; }
 
   .telegraph-key {
     position: sticky;

@@ -114,6 +114,20 @@ const MISSIONS = [
     noiseLevel: 0.14,
   },
   {
+    id: "alphabet-drill",
+    title: "字母基础训练",
+    typeLabel: "训练",
+    envLabel: "训练台 / 低噪",
+    difficultyLabel: "Lv.1",
+    story: "中继站的第一堂正式课。把 A 到 Z 这 26 个字母挨个发一遍，熟悉每个字母独有的点划节奏。下面的对照表会实时高亮当前目标字母，点一下任意字母还能听示范音。",
+    brief: "按顺序发送 A B C … Z 共 26 个字母。对照表会高亮当前目标字母。",
+    targetText: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    displayTarget: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    incomingSequence: encodeText("ABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+    mode: "encode",
+    noiseLevel: 0.08,
+  },
+  {
     id: "midnight-listen",
     title: "午夜监听",
     typeLabel: "监听",
@@ -286,12 +300,17 @@ const dom = {
   campaignProgress: document.getElementById("campaign-progress"),
   machineProgress: document.getElementById("machine-progress"),
   campaignStatusTag: document.getElementById("campaign-status-tag"),
+  morseChartGrid: document.getElementById("morse-chart-grid"),
+  morseChartTag: document.getElementById("morse-chart-tag"),
 };
+
+const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 let audioContext = null;
 let masterGain = null;
 let liveOscillator = null;
 let liveGain = null;
+let audioUnlocked = false;
 let waveformContext = dom.waveform.getContext("2d");
 let noiseContext = dom.noiseCanvas.getContext("2d");
 
@@ -677,6 +696,64 @@ function computeRhythmRank() {
   return "C";
 }
 
+function currentExpectedLetter() {
+  const mission = currentMission();
+  const target = normalizeText(mission.targetText);
+  const typed = normalizeText(state.currentTransmission);
+  return target[typed.length] || null;
+}
+
+function playMorseDemo(letter) {
+  unlockAudio();
+  const sequence = MORSE_TABLE[letter] || "";
+  let cursor = 0;
+  for (const ch of sequence) {
+    if (ch === ".") {
+      playTone(120, 820, cursor);
+      cursor += 160;
+    } else if (ch === "-") {
+      playTone(360, 760, cursor);
+      cursor += 440;
+    }
+  }
+}
+
+function renderMorseChart() {
+  if (!dom.morseChartGrid) {
+    return;
+  }
+  const expected = currentExpectedLetter();
+  const mission = currentMission();
+  const isDrill = mission.id === "alphabet-drill";
+  const typed = normalizeText(state.currentTransmission);
+  const targetLetters = new Set(normalizeText(mission.targetText).split(""));
+
+  dom.morseChartGrid.innerHTML = "";
+  for (const letter of ALPHABET) {
+    const cell = document.createElement("button");
+    cell.type = "button";
+    cell.className = "morse-cell";
+    if (letter === expected && !state.missionComplete) {
+      cell.classList.add("active");
+    }
+    if (isDrill && typed.includes(letter)) {
+      cell.classList.add("done");
+    }
+    if (!isDrill && !targetLetters.has(letter)) {
+      cell.classList.add("dim");
+    }
+    cell.innerHTML = `<span class="morse-letter">${letter}</span><span class="morse-code">${MORSE_TABLE[letter]}</span>`;
+    cell.addEventListener("click", () => playMorseDemo(letter));
+    dom.morseChartGrid.appendChild(cell);
+  }
+
+  if (dom.morseChartTag) {
+    dom.morseChartTag.textContent = isDrill
+      ? `当前目标 ${expected || "完成"}`
+      : "点击字母听示范";
+  }
+}
+
 function updateUI() {
   const mission = currentMission();
   const machine = currentMachine();
@@ -739,6 +816,7 @@ function updateUI() {
   updateMissionList();
   updateMachineList();
   updateAchievements();
+  renderMorseChart();
 }
 
 function formatIncomingSequence(mission) {
@@ -787,8 +865,33 @@ function ensureAudio() {
   }
   audioContext = new AudioContextClass();
   masterGain = audioContext.createGain();
-  masterGain.gain.value = 0.05;
+  masterGain.gain.value = 0.28;
   masterGain.connect(audioContext.destination);
+}
+
+function unlockAudio() {
+  ensureAudio();
+  if (!audioContext) {
+    return;
+  }
+  if (audioContext.state === "suspended") {
+    const resumed = audioContext.resume();
+    if (resumed && typeof resumed.catch === "function") {
+      resumed.catch(() => {});
+    }
+  }
+  if (!audioUnlocked) {
+    try {
+      const buffer = audioContext.createBuffer(1, 1, 22050);
+      const source = audioContext.createBufferSource();
+      source.buffer = buffer;
+      source.connect(audioContext.destination);
+      source.start(0);
+      audioUnlocked = true;
+    } catch (error) {
+      // ignore — some browsers throw if already running
+    }
+  }
 }
 
 function startLiveTone() {
@@ -1187,10 +1290,14 @@ function animationLoop(time) {
 }
 
 function bindEvents() {
-  dom.gateSubmit.addEventListener("click", verifyGateAnswer);
+  dom.gateSubmit.addEventListener("click", () => {
+    unlockAudio();
+    verifyGateAnswer();
+  });
   dom.gateAnswer.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
+      unlockAudio();
       verifyGateAnswer();
     }
   });
@@ -1234,7 +1341,10 @@ function bindEvents() {
     });
   });
 
-  dom.replayBtn.addEventListener("click", replayMissionSignal);
+  dom.replayBtn.addEventListener("click", () => {
+    unlockAudio();
+    replayMissionSignal();
+  });
   dom.resetBtn.addEventListener("click", () => {
     if (!state.gateVerified) {
       return;
@@ -1254,6 +1364,7 @@ function bindEvents() {
 
   dom.telegraphKey.addEventListener("pointerdown", (event) => {
     event.preventDefault();
+    unlockAudio();
     if (dom.telegraphKey.setPointerCapture) {
       dom.telegraphKey.setPointerCapture(event.pointerId);
     }
@@ -1271,6 +1382,18 @@ function bindEvents() {
     return tag === "INPUT" || tag === "TEXTAREA" || target.isContentEditable;
   };
 
+  const unlockOnce = () => {
+    unlockAudio();
+    if (audioUnlocked) {
+      document.removeEventListener("pointerdown", unlockOnce, true);
+      document.removeEventListener("touchstart", unlockOnce, true);
+      document.removeEventListener("keydown", unlockOnce, true);
+    }
+  };
+  document.addEventListener("pointerdown", unlockOnce, true);
+  document.addEventListener("touchstart", unlockOnce, true);
+  document.addEventListener("keydown", unlockOnce, true);
+
   window.addEventListener("keydown", (event) => {
     if (event.code !== "Space") {
       return;
@@ -1283,6 +1406,7 @@ function bindEvents() {
       return;
     }
     if (!state.keyDown) {
+      unlockAudio();
       pressKey();
     }
   });
