@@ -311,6 +311,16 @@ let masterGain = null;
 let liveOscillator = null;
 let liveGain = null;
 let audioUnlocked = false;
+
+const TONE_FREQUENCY = 720;
+const TONE_PEAK_GAIN = 0.06;
+const TONE_ATTACK_SEC = 0.018;
+const TONE_RELEASE_SEC = 0.04;
+const DOT_TONE_MS = 120;
+const DASH_TONE_MS = 360;
+const DOT_CYCLE_MS = 160;
+const DASH_CYCLE_MS = 440;
+const LETTER_GAP_MS = 280;
 let waveformContext = dom.waveform.getContext("2d");
 let noiseContext = dom.noiseCanvas.getContext("2d");
 
@@ -709,11 +719,11 @@ function playMorseDemo(letter) {
   let cursor = 0;
   for (const ch of sequence) {
     if (ch === ".") {
-      playTone(120, 820, cursor);
-      cursor += 160;
+      playTone(DOT_TONE_MS, TONE_FREQUENCY, cursor);
+      cursor += DOT_CYCLE_MS;
     } else if (ch === "-") {
-      playTone(360, 760, cursor);
-      cursor += 440;
+      playTone(DASH_TONE_MS, TONE_FREQUENCY, cursor);
+      cursor += DASH_CYCLE_MS;
     }
   }
 }
@@ -905,9 +915,9 @@ function startLiveTone() {
   liveOscillator = audioContext.createOscillator();
   liveGain = audioContext.createGain();
   liveOscillator.type = "square";
-  liveOscillator.frequency.value = 690;
+  liveOscillator.frequency.value = TONE_FREQUENCY;
   liveGain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-  liveGain.gain.exponentialRampToValueAtTime(0.06, audioContext.currentTime + 0.02);
+  liveGain.gain.exponentialRampToValueAtTime(TONE_PEAK_GAIN, audioContext.currentTime + TONE_ATTACK_SEC);
   liveOscillator.connect(liveGain);
   liveGain.connect(masterGain);
   liveOscillator.start();
@@ -922,13 +932,13 @@ function stopLiveTone() {
   const now = audioContext.currentTime;
   liveGain.gain.cancelScheduledValues(now);
   liveGain.gain.setValueAtTime(Math.max(liveGain.gain.value, 0.0001), now);
-  liveGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.04);
-  liveOscillator.stop(now + 0.05);
+  liveGain.gain.exponentialRampToValueAtTime(0.0001, now + TONE_RELEASE_SEC);
+  liveOscillator.stop(now + TONE_RELEASE_SEC + 0.01);
   liveOscillator = null;
   liveGain = null;
 }
 
-function playTone(durationMs, frequency = 760, delayMs = 0) {
+function playTone(durationMs, frequency = TONE_FREQUENCY, delayMs = 0) {
   ensureAudio();
   if (!audioContext) {
     return;
@@ -940,17 +950,19 @@ function playTone(durationMs, frequency = 760, delayMs = 0) {
   const gain = audioContext.createGain();
   const startTime = audioContext.currentTime + delayMs / 1000;
   const stopTime = startTime + durationMs / 1000;
+  const attackEnd = startTime + TONE_ATTACK_SEC;
+  const releaseStart = Math.max(attackEnd, stopTime - TONE_RELEASE_SEC);
 
   oscillator.type = "square";
   oscillator.frequency.value = frequency;
   gain.gain.setValueAtTime(0.0001, startTime);
-  gain.gain.exponentialRampToValueAtTime(0.055, startTime + 0.02);
-  gain.gain.setValueAtTime(0.055, Math.max(startTime + 0.02, stopTime - 0.03));
+  gain.gain.exponentialRampToValueAtTime(TONE_PEAK_GAIN, attackEnd);
+  gain.gain.setValueAtTime(TONE_PEAK_GAIN, releaseStart);
   gain.gain.exponentialRampToValueAtTime(0.0001, stopTime);
   oscillator.connect(gain);
   gain.connect(masterGain);
   oscillator.start(startTime);
-  oscillator.stop(stopTime + 0.01);
+  oscillator.stop(stopTime + 0.02);
 }
 
 function pressKey() {
@@ -1117,14 +1129,14 @@ function replayMissionSignal() {
   for (const character of sequence) {
     if (character === ".") {
       schedulePulseVisual(cursorMs, 0.09, 0.55);
-      playTone(120, 820, cursorMs);
-      cursorMs += 140;
+      playTone(DOT_TONE_MS, TONE_FREQUENCY, cursorMs);
+      cursorMs += DOT_CYCLE_MS;
     } else if (character === "-") {
       schedulePulseVisual(cursorMs, 0.18, 0.88);
-      playTone(360, 760, cursorMs);
-      cursorMs += 420;
+      playTone(DASH_TONE_MS, TONE_FREQUENCY, cursorMs);
+      cursorMs += DASH_CYCLE_MS;
     } else if (character === " ") {
-      cursorMs += 280;
+      cursorMs += LETTER_GAP_MS;
     }
   }
 
@@ -1145,11 +1157,11 @@ function morsePlaybackDuration(sequence) {
   let total = 0;
   for (const character of sequence) {
     if (character === ".") {
-      total += 140;
+      total += DOT_CYCLE_MS;
     } else if (character === "-") {
-      total += 420;
+      total += DASH_CYCLE_MS;
     } else if (character === " ") {
-      total += 280;
+      total += LETTER_GAP_MS;
     }
   }
   return total;
