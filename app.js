@@ -318,8 +318,8 @@ const TONE_ATTACK_SEC = 0.018;
 const TONE_RELEASE_SEC = 0.04;
 const DOT_TONE_MS = 120;
 const DASH_TONE_MS = 360;
-const DOT_CYCLE_MS = 160;
-const DASH_CYCLE_MS = 440;
+const DOT_CYCLE_MS = 200;
+const DASH_CYCLE_MS = 480;
 const LETTER_GAP_MS = 280;
 let waveformContext = dom.waveform.getContext("2d");
 let noiseContext = dom.noiseCanvas.getContext("2d");
@@ -949,20 +949,20 @@ function playTone(durationMs, frequency = TONE_FREQUENCY, delayMs = 0) {
   const oscillator = audioContext.createOscillator();
   const gain = audioContext.createGain();
   const startTime = audioContext.currentTime + delayMs / 1000;
-  const stopTime = startTime + durationMs / 1000;
-  const attackEnd = startTime + TONE_ATTACK_SEC;
-  const releaseStart = Math.max(attackEnd, stopTime - TONE_RELEASE_SEC);
+  const holdEnd = startTime + durationMs / 1000;
+  const attackEnd = Math.min(startTime + TONE_ATTACK_SEC, holdEnd);
+  const releaseEnd = holdEnd + TONE_RELEASE_SEC;
 
   oscillator.type = "square";
   oscillator.frequency.value = frequency;
   gain.gain.setValueAtTime(0.0001, startTime);
   gain.gain.exponentialRampToValueAtTime(TONE_PEAK_GAIN, attackEnd);
-  gain.gain.setValueAtTime(TONE_PEAK_GAIN, releaseStart);
-  gain.gain.exponentialRampToValueAtTime(0.0001, stopTime);
+  gain.gain.setValueAtTime(TONE_PEAK_GAIN, holdEnd);
+  gain.gain.exponentialRampToValueAtTime(0.0001, releaseEnd);
   oscillator.connect(gain);
   gain.connect(masterGain);
   oscillator.start(startTime);
-  oscillator.stop(stopTime + 0.02);
+  oscillator.stop(releaseEnd + 0.02);
 }
 
 function pressKey() {
